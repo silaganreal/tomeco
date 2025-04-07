@@ -2,18 +2,18 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SuperAdminController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Middleware\RoleMiddleware;
 
 Route::get('/', function () {
-    return Inertia::render('welcome');
+    return Inertia::render('auth/login');
 })->name('home');
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+Route::middleware(['auth', 'verified', 'role:user,admin,superadmin'])->group(function () {
+    Route::get('/dashboard', [UserController::class, 'index'])->name('dashboard');
+    Route::get('/violations', [UserController::class, 'violations']);
 });
 
 Route::middleware(['auth', 'verified', 'role:admin,superadmin',])->group(function () {
